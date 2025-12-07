@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Cup Café</title>
+    <style>
+        /* ====== Basic Reset ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff8f0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ====== Header ====== */
+        header {
+            background-color: #884e1b;
+            color: white;
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff3e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #884e1b;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        nav a {
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-reserve-header {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: none;
+            background: #ffd28a;
+            color: #5b320f;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-reserve-header:hover {
+            background: #ffbf5a;
+        }
+
+        /* ====== Hero Section ====== */
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 40px 32px 30px;
+        }
+
+        .hero-text {
+            flex: 1 1 280px;
+            max-width: 480px;
+        }
+
+        .hero-text h2 {
+            font-size: 2.4rem;
+            color: #4b2a10;
+            margin-bottom: 10px;
+        }
+
+        .hero-text p {
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 10px 22px;
+            border-radius: 999px;
+            background: #884e1b;
+            color: #fff8f0;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background: #6f3f15;
+        }
+
+        .btn-ghost {
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid #884e1b;
+            background: transparent;
+            color: #884e1b;
+            cursor: pointer;
+        }
+
+        .btn-ghost:hover {
+            background: #ffe7c7;
+        }
+
+        .hero-image {
+            flex: 1 1 280px;
+            max-width: 420px;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ====== Shared Section Styles ====== */
+        section {
+            padding: 30px 32px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.6rem;
+            color: #884e1b;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        /* ====== About Section ====== */
+        .about {
+            background: #ffe7c7;
+        }
+
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 2 1 260px;
+            font-size: 0.98rem;
+        }
+
+        .about-highlights {
+            flex: 1 1 220px;
+            list-style: none;
+            font-size: 0.95rem;
+        }
+
+        .about-highlights li::before {
+            content: "• ";
+            color: #884e1b;
+            font-weight: bold;
+        }
+
+        /* ====== Menu Section ====== */
+        .menu {
+            background: #fff8f0;
+        }
+
+        .menu-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #ccc;
+            width: 210px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            margin-top: 10px;
+            color: #884e1b;
+        }
+
+        .card p {
+            margin-top: 4px;
+        }
+
+        .menu-row {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+        }
+
+        .menu-chip {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #ffe7c7;
+            color: #4b2a10;
+        }
+
+        /* ====== Highlights Section ====== */
+        .highlights {
+            background: #fff;
+        }
+
+        .highlights-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            justify-content: center;
+        }
+
+        .highlight-card {
+            flex: 1 1 220px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid #f0c496;
+            background: #fffaf3;
+        }
+
+        .highlight-card h3 {
+            margin-bottom: 6px;
+            color: #884e1b;
+        }
+
+        .highlight-card p {
+            font-size: 0.92rem;
+        }
+
+        /* ====== Gallery Section ====== */
+        .gallery {
+            background: #fff8f0;
+        }
+
+        .gallery-images {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-images img {
+            width: 170px;
+            border-radius: 8px;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        /* ====== Testimonials ====== */
+        .testimonials {
+            background: #ffe7c7;
+        }
+
+        .testimonial-list {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            justify-content: center;
+        }
+
+        .testimonial-card {
+            flex: 1 1 260px;
+            background: #fffdf8;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border: 1px solid #f0c496;
+            font-size: 0.95rem;
+        }
+
+        .testimonial-card span {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #884e1b;
+        }
+
+        /* ====== Call to Action ====== */
+        .cta-reserve {
+            background: #fff;
+            text-align: center;
+            padding-bottom: 40px;
+        }
+
+        .cta-reserve p {
+            margin-bottom: 16px;
+            font-size: 0.98rem;
+        }
+
+        /* ====== Footer Section ====== */
+        footer {
+            padding: 18px 32px 30px;
+            background: #884e1b;
+            color: #fff9f3;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        footer p {
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            nav {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== Header Section ====== -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo">☕</div>
+            <h1>Cozy Cup Café</h1>
+        </div>
+        <nav>
+            <a href="#about">About</a>
+            <a href="#menu">Menu</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#contact">Contact</a>
+            <a href="{{ url_for('reserve_table') }}">
+                <button class="btn-reserve-header">Reserve a Table</button>
+            </a>
+        </nav>
+    </header>
+
+    <!-- ====== Hero Section ====== -->
+    <section class="hero">
+        <div class="hero-text">
+            <h2>Your Daily Dose of Fresh Coffee</h2>
+            <p>
+                A warm corner of the city where the espresso is bold, the conversations are slow,
+                and the playlists are as cozy as the couches. Drop in for a quick caffeine fix or
+                stay a while with your laptop and a slice of cake.
+            </p>
+            <div class="hero-actions">
+                <a href="{{ url_for('reserve_table') }}">
+                    <button class="btn-primary">Book a Table</button>
+                </a>
+                <a href="#menu">
+                    <button class="btn-ghost">View Menu</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93"
+                 alt="Cozy Café Interior">
+        </div>
+    </section>
+
+    <!-- ====== About Section ====== -->
+    <section id="about" class="about">
+        <h2 class="section-title">About Cozy Cup</h2>
+        <p class="section-subtitle">
+            Small-batch beans, handcrafted brews, and a space made for slow mornings and late-evening chats.
+        </p>
+        <div class="about-content">
+            <div class="about-text">
+                <p>
+                    Cozy Cup Café was born out of a simple idea: good coffee shouldn’t feel rushed.
+                    From our hand-picked beans to our freshly baked desserts, everything we serve
+                    is designed to slow you down—in the best way possible.
+                </p>
+                <p>
+                    Whether you’re here with friends, on a study grind, or just hiding from the rain,
+                    our baristas will make sure the cup in your hands is worth the moment you’ve taken.
+                </p>
+            </div>
+            <ul class="about-highlights">
+                <li>Single-origin coffee beans, freshly ground for every cup.</li>
+                <li>Quiet work-friendly corners with charging points.</li>
+                <li>Free Wi-Fi and soft lo-fi playlists all day.</li>
+                <li>Board games and books for lazy afternoons.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ====== Menu Section ====== -->
+    <section id="menu" class="menu">
+        <h2 class="section-title">Our Special Menu</h2>
+        <p class="section-subtitle">
+            Crafted classics and house favourites, made to pair with good company.
+        </p>
+
+        <div class="menu-grid">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348" alt="Latte">
+                <h3>Latte</h3>
+                <p>Creamy, smooth and comforting. Perfect for slow mornings. <br>₹150</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1529892485617-25f63cd7b1e9" alt="Cappuccino">
+                <h3>Cappuccino</h3>
+                <p>Rich espresso topped with velvety foam. A café classic. <br>₹180</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb" alt="Espresso">
+                <h3>Espresso</h3>
+                <p>Bold, intense, and straight to the point. <br>₹120</p>
+            </div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772" alt="Dessert">
+                <h3>Chocolate Fudge Cake</h3>
+                <p>Dense, gooey, and dangerously addictive. <br>₹140</p>
+            </div>
+        </div>
+
+        <div class="menu-row">
+            <span class="menu-chip">Cold Brews &amp; Frappés</span>
+            <span class="menu-chip">Fresh Bakes &amp; Pastries</span>
+            <span class="menu-chip">Vegan &amp; Dairy-free Options</span>
+        </div>
+    </section>
+
+    <!-- ====== Highlights Section ====== -->
+    <section class="highlights">
+        <h2 class="section-title">Why People Love Us</h2>
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <h3>Handcrafted Drinks</h3>
+                <p>Every drink is made to order—no rushed batches, no shortcuts, just good old barista magic.</p>
+            </div>
+            <div class="highlight-card">
+                <h3>Chill Workspaces</h3>
+                <p>Cozy seating, quiet zones, and plenty of charging points for your laptop and phone.</p>
+            </div>
+            <div class="highlight-card">
+                <h3>Evening Vibes</h3>
+                <p>Soft lighting, acoustic playlists and warm ambience for late-evening catch-ups.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Gallery Section ====== -->
+    <section id="gallery" class="gallery">
+        <h2 class="section-title">Our Café Moments</h2>
+        <p class="section-subtitle">A peek into the space you’ll soon call your second home.</p>
+        <div class="gallery-images">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4" alt="Cafe Interior">
+            <img src="https://images.unsplash.com/photo-1481391032119-d89fee407e44" alt="Coffee Beans">
+            <img src="https://images.unsplash.com/photo-1612849600077-e4398ed7b3e9" alt="Desserts">
+            <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814" alt="Barista at work">
+        </div>
+    </section>
+
+    <!-- ====== Testimonials Section ====== -->
+    <section class="testimonials">
+        <h2 class="section-title">What Our Guests Say</h2>
+        <div class="testimonial-list">
+            <div class="testimonial-card">
+                “Perfect spot to study. The staff never rush you, the Wi-Fi is solid, and the cappuccino is elite.”
+                <span>— Ananya, Student</span>
+            </div>
+            <div class="testimonial-card">
+                “Their cold brew and chocolate cake are my Friday ritual now. Cozy Cup never disappoints.”
+                <span>— Rohan, Designer</span>
+            </div>
+            <div class="testimonial-card">
+                “Love the ambience in the evenings. Great place to unwind after work with friends.”
+                <span>— Meera, Developer</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Reserve CTA Section ====== -->
+    <section class="cta-reserve">
+        <h2 class="section-title">Ready to Visit?</h2>
+        <p>
+            Planning a catch-up with friends or a quiet work session?  
+            Reserve your favourite corner in advance and walk in stress-free.
+        </p>
+        <a href="{{ url_for('reserve_table') }}">
+            <button class="btn-primary">Reserve a Table Now</button>
+        </a>
+    </section>
+
+    <!-- ====== Footer Section ====== -->
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{{ url_for('admin_login') }}" 
+        style="font-size: 0.8rem; color: #ffffff; opacity: 0.7; text-decoration: none;">
+        Admin Login
+        </a>
+    </div>
+
+    <footer id="contact">
+        <p>📍 A random place</p>
+        <p>📞 +91 98765 43210</p>
+        <p>Open daily: 8:00 AM – 10:00 PM</p>
+    </footer>
+    
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard – Cozy Cup Café</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            background: #fff8f0;
+            color: #333;
+            padding: 24px;
+        }
+        .wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #f3d3a8;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.12);
+            padding: 20px 22px 16px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        header h1 {
+            color: #884e1b;
+        }
+        header a {
+            font-size: 0.9rem;
+            color: #884e1b;
+            text-decoration: none;
+            margin-left: 12px;
+        }
+        header a:hover {
+            text-decoration: underline;
+        }
+        .flash-container {
+            margin-bottom: 8px;
+        }
+        .flash-msg {
+            background: #e0f2fe;
+            border: 1px solid #93c5fd;
+            color: #1d4ed8;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border-bottom: 1px solid #f0e0c5;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        th {
+            background: #fff4e0;
+            color: #5b3a1a;
+        }
+        tbody tr:nth-child(even) {
+            background: #fffaf3;
+        }
+        .empty {
+            text-align: center;
+            padding: 20px 0;
+            color: #777;
+            font-size: 0.95rem;
+        }
+        .delete-form {
+            display: inline;
+        }
+        .btn-delete {
+            border: none;
+            background: #dc2626;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-delete:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>Admin – Reservations</h1>
+        <div>
+            <a href="{{ url_for('home') }}">← Back to Café</a>
+            <a href="{{ url_for('admin_logout') }}">Log out</a>
+        </div>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for msg in messages %}
+            <div class="flash-msg">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if reservations|length == 0 %}
+        <div class="empty">No reservations yet.</div>
+    {% else %}
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Table</th>
+                <th>Name</th>
+                <th>Time</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for r in reservations %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.table_no }}</td>
+                    <td>{{ r.name }}</td>
+                    <td>{{ r.res_time }}</td>
+                    <td>{{ r.pno or "-" }}</td>
+                    <td>{{ r.email or "-" }}</td>
+                    <td>
+                        <form class="delete-form"
+                              action="{{ url_for('admin_delete_reservation', res_id=r.id) }}"
+                              method="POST"
+                              onsubmit="return confirm('Delete reservation #{{ r.id }}?');">
+                            <button class="btn-delete" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+</body>
+</html>

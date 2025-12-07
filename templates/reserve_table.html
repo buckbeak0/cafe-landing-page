@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reserve a Table</title>
+    <style>
+        :root {
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent: #2563eb;
+            --accent-soft: #bfdbfe;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .container {
+            background: var(--card);
+            border-radius: 18px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+            max-width: 980px;
+            width: 100%;
+            padding: 24px 26px 20px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .legend {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-strong);
+            background: #ffffff;
+        }
+
+        .legend-color.reserved {
+            border-color: var(--danger);
+            background: #fecaca;
+        }
+
+        .layout-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        /* ROOM + LAYOUT */
+        .room-wrapper {
+            flex: 1 1 340px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .room {
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 1 / 1;
+            border-radius: 24px;
+            border: 2px solid var(--border-strong);
+            padding: 22px;
+            background: #f9fafb;
+            position: relative;
+        }
+
+        .room::before {
+            content: "Seating Layout";
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: #f9fafb;
+            padding: 0 6px;
+        }
+
+        .room-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            grid-template-rows: 1fr 1.2fr 1fr;
+            grid-template-areas:
+                "c1  t5  c2"
+                "t7  gap t8"
+                "c3  t6  c4";
+            gap: 8px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .cell-c1 { grid-area: c1; }
+        .cell-c2 { grid-area: c2; }
+        .cell-c3 { grid-area: c3; }
+        .cell-c4 { grid-area: c4; }
+        .cell-t5 { grid-area: t5; }
+        .cell-t6 { grid-area: t6; }
+        .cell-t7 { grid-area: t7; }
+        .cell-t8 { grid-area: t8; }
+
+        .table-radio {
+            display: none;
+        }
+
+        .table-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .table-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .table-label.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .table-shape {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 2px solid var(--border-strong);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.12s ease;
+        }
+
+        .table-rect {
+            width: 120px;
+            height: 42px;
+        }
+
+        .table-rect-vert {
+            width: 44px;
+            height: 120px;
+        }
+
+        .table-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 999px;
+        }
+
+        .table-shape.reserved {
+            border-color: var(--danger);
+            background: #fecaca;
+        }
+
+        .table-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .table-name.reserved-name {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .seat-row,
+        .seat-column {
+            display: flex;
+            gap: 4px;
+        }
+
+        .seat-column {
+            flex-direction: column;
+        }
+
+        .seat {
+            width: 18px;
+            height: 11px;
+            border-radius: 6px;
+            border: 1px solid var(--border-strong);
+            background: #ffffff;
+            box-shadow: 0 1px 1px rgba(15, 23, 42, 0.07);
+        }
+
+        .seat.small {
+            width: 16px;
+            height: 10px;
+        }
+
+        /* selection highlight */
+        .table-radio:checked + .table-label .table-shape:not(.reserved) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            box-shadow: 0 0 0 1px var(--accent-soft);
+            transform: translateY(-1px);
+        }
+
+        .table-radio:checked + .table-label .seat {
+            background: #e0f2fe;
+            border-color: #93c5fd;
+        }
+
+        /* FORM SECTION */
+        .form-section {
+            flex: 1 1 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 0.85rem;
+        }
+
+        .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        input, select {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            font: inherit;
+            background: #f9fafb;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-soft);
+            background: #ffffff;
+        }
+
+        .contact-hint,
+        .time-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        button[type="submit"] {
+            margin-top: 6px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: none;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 10px 16px rgba(37, 99, 235, 0.28);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 22px rgba(37, 99, 235, 0.34);
+            filter: brightness(1.03);
+        }
+
+        .note {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .note span {
+            font-weight: 600;
+            color: var(--danger);
+        }
+
+        /* flash messages */
+        .flash-container {
+            margin: 0 auto 10px;
+            max-width: 900px;
+        }
+
+        .flash-msg {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 18px 16px 16px;
+            }
+
+            .layout-wrapper {
+                flex-direction: column;
+            }
+
+            .room {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for msg in messages %}
+            <div class="flash-msg">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h1>Reserve Your Table</h1>
+    <p class="subtitle">Tap a table in the layout, choose your time, and we’ll hold it for you.</p>
+    <p class="legend">
+        <span><span class="legend-color"></span> Available</span> &nbsp;·&nbsp;
+        <span><span class="legend-color reserved"></span> Reserved (within 3 hours of chosen time)</span>
+    </p>
+
+    {% set reserved = reserved_tables or [] %}
+
+    <form action="{{ url_for('reserve_table') }}" method="POST">
+        <div class="layout-wrapper">
+            <!-- Seating layout -->
+            <div class="room-wrapper">
+                <div class="room">
+                    <div class="room-grid">
+                        <!-- Corner tables: 2 seats each -->
+                        {% set t1_reserved = '1' in reserved %}
+                        <div class="cell-c1 table-group">
+                            <input type="radio" id="table1" name="table_id" value="1" class="table-radio"
+                                   {% if t1_reserved %}disabled{% endif %}>
+                            <label for="table1"
+                                   class="table-label {% if t1_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat small"></div>
+                                    <div class="seat small"></div>
+                                </div>
+                                <div class="table-shape table-circle {% if t1_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t1_reserved %}reserved-name{% endif %}">
+                                    T1 • 2 seats{% if t1_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        {% set t2_reserved = '2' in reserved %}
+                        <div class="cell-c2 table-group">
+                            <input type="radio" id="table2" name="table_id" value="2" class="table-radio"
+                                   {% if t2_reserved %}disabled{% endif %}>
+                            <label for="table2"
+                                   class="table-label {% if t2_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat small"></div>
+                                    <div class="seat small"></div>
+                                </div>
+                                <div class="table-shape table-circle {% if t2_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t2_reserved %}reserved-name{% endif %}">
+                                    T2 • 2 seats{% if t2_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        {% set t3_reserved = '3' in reserved %}
+                        <div class="cell-c3 table-group">
+                            <input type="radio" id="table3" name="table_id" value="3" class="table-radio"
+                                   {% if t3_reserved %}disabled{% endif %}>
+                            <label for="table3"
+                                   class="table-label {% if t3_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat small"></div>
+                                    <div class="seat small"></div>
+                                </div>
+                                <div class="table-shape table-circle {% if t3_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t3_reserved %}reserved-name{% endif %}">
+                                    T3 • 2 seats{% if t3_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        {% set t4_reserved = '4' in reserved %}
+                        <div class="cell-c4 table-group">
+                            <input type="radio" id="table4" name="table_id" value="4" class="table-radio"
+                                   {% if t4_reserved %}disabled{% endif %}>
+                            <label for="table4"
+                                   class="table-label {% if t4_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat small"></div>
+                                    <div class="seat small"></div>
+                                </div>
+                                <div class="table-shape table-circle {% if t4_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t4_reserved %}reserved-name{% endif %}">
+                                    T4 • 2 seats{% if t4_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Top 4-seat table -->
+                        {% set t5_reserved = '5' in reserved %}
+                        <div class="cell-t5 table-group">
+                            <input type="radio" id="table5" name="table_id" value="5" class="table-radio"
+                                   {% if t5_reserved %}disabled{% endif %}>
+                            <label for="table5"
+                                   class="table-label {% if t5_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                </div>
+                                <div class="table-shape table-rect {% if t5_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t5_reserved %}reserved-name{% endif %}">
+                                    T5 • 4 seats{% if t5_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Bottom 4-seat table -->
+                        {% set t6_reserved = '6' in reserved %}
+                        <div class="cell-t6 table-group">
+                            <input type="radio" id="table6" name="table_id" value="6" class="table-radio"
+                                   {% if t6_reserved %}disabled{% endif %}>
+                            <label for="table6"
+                                   class="table-label {% if t6_reserved %}disabled{% endif %}">
+                                <div class="seat-row">
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                    <div class="seat"></div>
+                                </div>
+                                <div class="table-shape table-rect {% if t6_reserved %}reserved{% endif %}"></div>
+                                <div class="table-name {% if t6_reserved %}reserved-name{% endif %}">
+                                    T6 • 4 seats{% if t6_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Left 6-seat table (vertical) -->
+                        {% set t7_reserved = '7' in reserved %}
+                        <div class="cell-t7 table-group">
+                            <input type="radio" id="table7" name="table_id" value="7" class="table-radio"
+                                   {% if t7_reserved %}disabled{% endif %}>
+                            <label for="table7"
+                                   class="table-label {% if t7_reserved %}disabled{% endif %}">
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <div class="seat-column">
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                    </div>
+                                    <div class="table-shape table-rect-vert {% if t7_reserved %}reserved{% endif %}"></div>
+                                    <div class="seat-column">
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                    </div>
+                                </div>
+                                <div class="table-name {% if t7_reserved %}reserved-name{% endif %}">
+                                    T7 • 6 seats{% if t7_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Right 6-seat table (vertical) -->
+                        {% set t8_reserved = '8' in reserved %}
+                        <div class="cell-t8 table-group">
+                            <input type="radio" id="table8" name="table_id" value="8" class="table-radio"
+                                   {% if t8_reserved %}disabled{% endif %}>
+                            <label for="table8"
+                                   class="table-label {% if t8_reserved %}disabled{% endif %}">
+                                <div style="display:flex;align-items:center;gap:6px;">
+                                    <div class="seat-column">
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                    </div>
+                                    <div class="table-shape table-rect-vert {% if t8_reserved %}reserved{% endif %}"></div>
+                                    <div class="seat-column">
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                        <div class="seat"></div>
+                                    </div>
+                                </div>
+                                <div class="table-name {% if t8_reserved %}reserved-name{% endif %}">
+                                    T8 • 6 seats{% if t8_reserved %} (reserved){% endif %}
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form section -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="name">Name<span class="required">*</span></label>
+                    <input type="text" id="name" name="name" placeholder="Your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact<span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" placeholder="Phone number (optional)">
+                    <input type="email" id="email" name="email" placeholder="Email address (optional)">
+                    <p class="contact-hint">
+                        Provide at least one: phone number or email. We’ll use it to confirm your reservation.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="arrival_time">Arrival date &amp; time<span class="required">*</span></label>
+                    <input type="datetime-local"
+                           id="arrival_time"
+                           name="arrival_time"
+                           value="{{ arrival_time_value or '' }}"
+                           required>
+                    <p class="time-hint">
+                        Reservations are allowed only from now up to 2 days in advance.
+                        Tables are blocked if there is another reservation within 3 hours.
+                    </p>
+                </div>
+
+                <button type="submit">Confirm Reservation</button>
+            </div>
+        </div>
+
+        <p class="note">
+            <span>Note:</span> Customers can arrive maximum <span>1 hour 30 minutes</span> late,
+            otherwise the reservation will be cancelled.
+        </p>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.getElementById("arrival_time");
+            if (!input) return;
+
+            function toLocalDatetimeValue(date) {
+                const pad = (n) => n.toString().padStart(2, "0");
+                const year = date.getFullYear();
+                const month = pad(date.getMonth() + 1);
+                const day = pad(date.getDate());
+                const hours = pad(date.getHours());
+                const minutes = pad(date.getMinutes());
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            const now = new Date();
+            const max = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+
+            if (!input.min) input.min = toLocalDatetimeValue(now);
+            if (!input.max) input.max = toLocalDatetimeValue(max);
+
+            // when user picks time, reload page with that time in query
+            input.addEventListener("change", function () {
+                if (!this.value) return;
+                const baseUrl = "{{ url_for('reserve_table') }}";
+                const url = baseUrl + "?arrival_time=" + encodeURIComponent(this.value);
+                window.location.href = url;
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

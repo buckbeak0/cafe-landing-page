@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login – Cozy Cup Café</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            background: #fff8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .card {
+            background: #ffffff;
+            padding: 24px 26px;
+            border-radius: 16px;
+            border: 1px solid #f3d3a8;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.12);
+            width: 340px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 4px;
+            color: #884e1b;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            color: #7a5a38;
+        }
+        .flash-container {
+            margin-bottom: 10px;
+        }
+        .flash-msg {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        label {
+            font-size: 0.9rem;
+            color: #5b3a1a;
+        }
+        input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #e0c7a2;
+            font: inherit;
+            background: #fff9f3;
+        }
+        input:focus {
+            outline: none;
+            border-color: #c28a47;
+            box-shadow: 0 0 0 1px #f3d3a8;
+        }
+        button {
+            width: 100%;
+            padding: 9px;
+            border-radius: 999px;
+            border: none;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            background: #884e1b;
+            color: #fff9f3;
+            margin-top: 6px;
+        }
+        button:hover {
+            background: #6f3f15;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.85rem;
+        }
+        .back-link a {
+            color: #884e1b;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for msg in messages %}
+            <div class="flash-msg">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <h1>Admin Login</h1>
+    <p class="subtitle">Restricted area – café wizards only.</p>
+
+    <form action="{{ url_for('admin_login') }}" method="POST">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required>
+        </div>
+
+        <button type="submit">Log in</button>
+    </form>
+
+    <div class="back-link">
+        <a href="{{ url_for('home') }}">← Back to Café</a>
+    </div>
+</div>
+</body>
+</html>
