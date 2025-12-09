@@ -14,7 +14,6 @@ app = Flask(__name__)
 app.secret_key = "dlsjaflkasjf"  
 
 DB_NAME = "cafe.db"
-RESERVATION_GAP = timedelta(hours=3)
 MAX_DAYS_AHEAD = 2
 
 ADMIN_USERNAME = "admin"
@@ -93,7 +92,7 @@ def reserve_table():
             "SELECT res_time FROM reservations WHERE table_no = ?",
             (table_id,),
         ).fetchall()
-
+        RESERVATION_GAP = timedelta(hours=3)
         for r in rows:
             existing = datetime.fromisoformat(r["res_time"])
             if abs(existing - res_time) < RESERVATION_GAP:
